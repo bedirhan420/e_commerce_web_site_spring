@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Sepetim</title>
+</head>
+<body>
+<h2>Sepetim</h2>
+<table>
+    <thead>
+    <tr>
+        <th>Ürün</th>
+        <th>Fiyat</th>
+        <th>Miktar</th>
+        <th>Toplam</th>
+        <th>İşlemler</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="cartItem : ${cartItems}">
+        <td th:text="${productNames[cartItem.productId]}"></td>
+        <td th:text="${cartItem.price}"></td>
+        <td>
+            <form action="/cart/update" method="post">
+                <input type="hidden" name="cartItemId" th:value="${cartItem.id}" />
+                <input type="number" name="quantity" th:value="${cartItem.quantity}" min="1" />
+                <button type="submit">Güncelle</button>
+            </form>
+        </td>
+        <td th:text="${cartItem.price * cartItem.quantity}"></td>
+        <td>
+            <form action="/cart/delete" method="post">
+                <input type="hidden" name="cartItemId" th:value="${cartItem.id}" />
+                <button type="submit">Sil</button>
+            </form>
+        </td>
+    </tr>
+    </tbody>
+</table>
+<a href="/products/list">Alışverişe Devam Et</a>
+</body>
+</html>

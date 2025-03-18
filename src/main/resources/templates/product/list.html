@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <title>Ürün Listesi</title>
+</head>
+<body>
+<h2>Ürün Listesi</h2>
+
+<form action="/products/search" method="get">
+  <label for="name">Ürün Adı:</label>
+  <input type="text" id="name" name="name" placeholder="Ürün adı girin">
+
+  <label for="minPrice">Min Fiyat:</label>
+  <input type="number" id="minPrice" name="minPrice" step="0.01" placeholder="Min fiyat">
+
+  <label for="maxPrice">Max Fiyat:</label>
+  <input type="number" id="maxPrice" name="maxPrice" step="0.01" placeholder="Max fiyat">
+
+  <button type="submit">Ara</button>
+</form>
+
+<a th:if="${userRole == 'SELLER'}" href="/products/new">Yeni Ürün Ekle</a>
+
+<table border="1">
+  <thead>
+  <tr>
+    <th>ID</th>
+    <th>Ad</th>
+    <th>Açıklama</th>
+    <th>Fiyat</th>
+    <th>Stok</th>
+    <th>Satıcı</th>
+    <th>İşlemler</th>
+  </tr>
+  </thead>
+  <tbody>
+  <tr th:each="product : ${products}">
+    <td th:text="${product.id}"></td>
+    <td th:text="${product.name}"></td>
+    <td th:text="${product.description}"></td>
+    <td th:text="${product.price} + ' TL'"></td>
+    <td th:text="${product.stock}"></td>
+    <td th:text="${product.sellerId}"></td>
+    <td>
+      <a th:if="${userRole == 'SELLER'}" th:href="@{/products/edit/{id}(id=${product.id})}">Düzenle</a>
+      <a th:if="${userRole == 'SELLER'}" th:href="@{/products/delete/{id}(id=${product.id})}" onclick="return confirm('Ürünü silmek istediğinize emin misiniz?')">Sil</a>
+
+      <form action="/cart/add/{id}" method="post" th:action="@{/cart/add/{id}(id=${product.id})}">
+        <button type="submit">Sepete Ekle</button>
+      </form>
+
+    </td>
+  </tr>
+  </tbody>
+</table>
+
+<a href="/cart/view" th:href="@{/cart/view}">
+  <button type="button">Sepete Git</button>
+</a>
+
+</body>
+</html>

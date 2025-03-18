@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <title>Ürünü Düzenle</title>
+</head>
+<body>
+<h2>Ürünü Düzenle</h2>
+<form th:action="@{/products/update}" method="post">
+  <input type="hidden" name="id" th:value="${product.id}">
+
+  <label>Ad:</label>
+  <input type="text" name="name" th:value="${product.name}" required><br>
+
+  <label>Açıklama:</label>
+  <textarea name="description" th:value="${product.description}" required></textarea><br>
+
+  <label>Fiyat:</label>
+  <input type="number" name="price" step="0.01" th:value="${product.price}" required><br>
+
+  <label>Stok:</label>
+  <input type="number" name="stock" th:value="${product.stock}" required><br>
+
+  <button type="submit">Güncelle</button>
+</form>
+<a href="/products/list">Geri Dön</a>
+</body>
+</html>
