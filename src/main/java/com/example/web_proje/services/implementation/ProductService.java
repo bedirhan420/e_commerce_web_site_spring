@@ -36,6 +36,11 @@ public class ProductService implements IProduct {
                 .orElseThrow(() -> new RuntimeException("Satıcı bulunamadı!"));
 
         product.setSeller(seller);
+
+        if (productDTO.getImage() != null && productDTO.getImage().length > 0) {
+            product.setImage(productDTO.getImage());
+        }
+
         ProductEntity savedProduct = productRepo.save(product);
         return ProductMapper.toDTO(savedProduct);
     }
@@ -58,7 +63,15 @@ public class ProductService implements IProduct {
         ProductEntity product = productRepo.findById(productDTO.getId())
                 .orElseThrow(() -> new RuntimeException("Ürün bulunamadı!"));
 
-        product.setId(product.getId());
+        // Validating inputs before updating
+        if (productDTO.getName() == null || productDTO.getName().isEmpty()) {
+            throw new RuntimeException("Ürün adı boş olamaz!");
+        }
+        if (productDTO.getPrice() <= 0) {
+            throw new RuntimeException("Fiyat geçerli olmalıdır!");
+        }
+
+        // Updating fields
         product.setName(productDTO.getName());
         product.setPrice(productDTO.getPrice());
         product.setDescription(productDTO.getDescription());
@@ -76,9 +89,15 @@ public class ProductService implements IProduct {
             product.setCartItems(updatedCartItems);
         }
 
+        // Only update image if changed
+        if (productDTO.getImage() != null && productDTO.getImage().length > 0) {
+            product.setImage(productDTO.getImage());
+        }
+
         ProductEntity updatedProduct = productRepo.save(product);
         return ProductMapper.toDTO(updatedProduct);
     }
+
 
     @Override
     public void deleteProduct(Long id) {

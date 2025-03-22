@@ -6,7 +6,8 @@
 </head>
 <body>
 <h2>Yeni Ürün Ekle</h2>
-<form action="/products/save" method="post">
+
+<form action="/products/save" method="post" enctype="multipart/form-data">
   <label>Ad:</label>
   <input type="text" name="name" required><br>
 
@@ -19,8 +20,17 @@
   <label>Stok:</label>
   <input type="number" name="stock" required><br>
 
+  <label>Ürün Resmi:</label>
+  <input type="file" name="imageFile" accept="image/*" required><br>
+
   <button type="submit">Kaydet</button>
 </form>
+
 <a href="#" onclick="history.go(-1)">Geri Dön</a>
+
+<div th:if="${param.error}">
+  <p style="color:red;">Hata: ${param.error}</p>
+</div>
+
 </body>
 </html>

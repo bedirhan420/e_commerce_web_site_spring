@@ -25,6 +25,7 @@
   <thead>
   <tr>
     <th>ID</th>
+    <th>Resim</th>
     <th>Ad</th>
     <th>Açıklama</th>
     <th>Fiyat</th>
@@ -36,6 +37,9 @@
   <tbody>
   <tr th:each="product : ${products}">
     <td th:text="${product.id}"></td>
+    <td>
+      <img th:if="${product.imageBase64}" th:src="'data:image/png;base64,' + ${product.imageBase64}" width="100" height="100"/>
+    </td>
     <td th:text="${product.name}"></td>
     <td th:text="${product.description}"></td>
     <td th:text="${product.price} + ' TL'"></td>
@@ -45,16 +49,15 @@
       <a th:if="${userRole == 'SELLER'}" th:href="@{/products/edit/{id}(id=${product.id})}">Düzenle</a>
       <a th:if="${userRole == 'SELLER'}" th:href="@{/products/delete/{id}(id=${product.id})}" onclick="return confirm('Ürünü silmek istediğinize emin misiniz?')">Sil</a>
 
-      <form action="/cart/add/{id}" method="post" th:action="@{/cart/add/{id}(id=${product.id})}">
+      <form th:if="${userRole == 'BUYER'}" action="/cart/add/{id}" method="post" th:action="@{/cart/add/{id}(id=${product.id})}">
         <button type="submit">Sepete Ekle</button>
       </form>
-
     </td>
   </tr>
   </tbody>
 </table>
 
-<a href="/cart/view" th:href="@{/cart/view}">
+<a th:if="${userRole == 'BUYER'}" href="/cart/view" th:href="@{/cart/view}">
   <button type="button">Sepete Git</button>
 </a>
 

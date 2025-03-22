@@ -24,10 +24,15 @@ public class ProductEntity {
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL)
     private List<CartItemEntity> cartItems;
 
+    @Lob
+    @Column(columnDefinition = "LONGBLOB")
+    private byte[] image;
+
+
     public ProductEntity() {
     }
 
-    public ProductEntity(Long id, String name, String description, Double price, Integer stock, UserEntity seller, List<CartItemEntity> cartItems) {
+    public ProductEntity(Long id, String name, String description, Double price, Integer stock, UserEntity seller, List<CartItemEntity> cartItems,byte[] image) {
         this.id = id;
         this.name = name;
         this.description = description;
@@ -35,6 +40,7 @@ public class ProductEntity {
         this.stock = stock;
         this.seller = seller;
         this.cartItems = cartItems;
+        this.image = image;
     }
 
     public Long getId() {
@@ -92,5 +98,14 @@ public class ProductEntity {
     public void setCartItems(List<CartItemEntity> cartItems) {
         this.cartItems = cartItems;
     }
+
+    public byte[] getImage() {
+        return image;
+    }
+
+    public void setImage(byte[] image) {
+        this.image = image;
+    }
+
 }
 

@@ -17,6 +17,7 @@ public class ProductMapper {
         dto.setCartItemIds(product.getCartItems() != null ?
                 product.getCartItems().stream().map(cartItem -> cartItem.getId()).collect(Collectors.toList())
                 : null);
+        dto.setImage(product.getImage());
         return dto;
     }
 
@@ -27,6 +28,7 @@ public class ProductMapper {
         product.setDescription(dto.getDescription());
         product.setPrice(dto.getPrice());
         product.setStock(dto.getStock());
+        product.setImage(dto.getImage());
         return product;
     }
 }

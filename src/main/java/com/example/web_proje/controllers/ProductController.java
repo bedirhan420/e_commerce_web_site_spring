@@ -10,8 +10,12 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.util.Base64;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Controller
 @RequestMapping("/products")
@@ -27,18 +31,38 @@ public class ProductController {
 
     @GetMapping("/list")
     public String listProducts(Model model, @AuthenticationPrincipal UserDetails userDetails) {
-        List<ProductDTO> products = productService.findAllProducts();
-        model.addAttribute("products", products);
+        List<ProductDTO> products;
 
         if (userDetails != null) {
             UserEntity user = userService.findByUsername(userDetails.getUsername());
             model.addAttribute("username", user.getUsername());
             model.addAttribute("userRole", user.getRole().name());
+
+            // SELLER rolündeyse, sadece kendi ürünlerini filtreliyoruz
+            if ("SELLER".equals(user.getRole().name())) {
+                products = productService.findAllProducts().stream()
+                        .filter(product -> product.getSellerId().equals(user.getId()))
+                        .collect(Collectors.toList());
+            } else {
+                // BUYER rolündeyse tüm ürünleri gösteriyoruz
+                products = productService.findAllProducts();
+            }
         } else {
             model.addAttribute("username", "Guest");
             model.addAttribute("userRole", "GUEST");
+
+            // Eğer kullanıcı giriş yapmamışsa, tüm ürünleri göster
+            products = productService.findAllProducts();
         }
 
+        // Ürün resimlerini Base64 formatına çevir
+        products.forEach(product -> {
+            if (product.getImage() != null) {
+                String base64Image = Base64.getEncoder().encodeToString(product.getImage());
+                product.setImageBase64(base64Image);
+            }
+        });
+        model.addAttribute("products", products);
         return "product/list";
     }
 
@@ -53,8 +77,11 @@ public class ProductController {
     }
 
     @PostMapping("/save")
-    public String saveProduct(@ModelAttribute ProductDTO productDTO, @AuthenticationPrincipal UserDetails userDetails) {
+    public String saveProduct(@ModelAttribute ProductDTO productDTO,
+                              @RequestParam("imageFile") MultipartFile imageFile,
+                              @AuthenticationPrincipal UserDetails userDetails) {
         System.out.println("Product DTO: " + productDTO);
+
         if (userDetails == null) {
             return "redirect:/products?error=Unauthorized";
         }
@@ -64,8 +91,20 @@ public class ProductController {
             return "redirect:/products?error=Unauthorized";
         }
 
+        try {
+            if (!imageFile.isEmpty()) {
+                productDTO.setImage(imageFile.getBytes());
+                System.out.println("Resim Yükleme Başarılı");
+            }
+            System.out.println("Resim Boş Geldi");
+        } catch (IOException e) {
+            System.out.println("Resim Yüklenemedi");
+            return "redirect:/products?error=ImageUploadFailed";
+        }
+
         productDTO.setSellerId(user.getId());
         productService.newProduct(productDTO);
+
         return "redirect:/products/list";
     }
 
@@ -88,7 +127,13 @@ public class ProductController {
     }
 
     @PostMapping("/update")
-    public String updateProduct(@ModelAttribute ProductDTO productDTO, @AuthenticationPrincipal UserDetails userDetails) {
+    public String updateProduct(@RequestParam Long id,
+                                @RequestParam String name,
+                                @RequestParam String description,
+                                @RequestParam Double price,
+                                @RequestParam Integer stock,
+                                @RequestParam(required = false) MultipartFile image,
+                                @AuthenticationPrincipal UserDetails userDetails) {
         if (userDetails == null) {
             return "redirect:/products/list?error=Unauthorized";
         }
@@ -99,15 +144,33 @@ public class ProductController {
             return "redirect:/products/list?error=Unauthorized";
         }
 
-        ProductDTO existingProduct = productService.findProductById(productDTO.getId())
+        ProductDTO existingProduct = productService.findProductById(id)
                 .orElseThrow(() -> new RuntimeException("Ürün bulunamadı"));
 
+        // Kullanıcının ürün sahibi olup olmadığını kontrol et
         if (!existingProduct.getSellerId().equals(user.getId())) {
             return "redirect:/products/list?error=Unauthorized";
         }
 
-        productDTO.setSellerId(user.getId());
-        productService.updateProduct(productDTO);
+        try {
+            if (image != null && !image.isEmpty()) {
+                // Yeni resmi byte[]'a dönüştür
+                existingProduct.setImage(image.getBytes());
+            } else {
+                // Mevcut resmi kullan
+                existingProduct.setImage(existingProduct.getImage());
+            }
+
+            existingProduct.setName(name);
+            existingProduct.setDescription(description);
+            existingProduct.setPrice(price);
+            existingProduct.setStock(stock);
+            existingProduct.setSellerId(user.getId());
+
+            productService.updateProduct(existingProduct);
+        } catch (IOException e) {
+            return "redirect:/products/list?error=ImageUploadFailed";
+        }
 
         return "redirect:/products/list?success=Product updated successfully";
     }

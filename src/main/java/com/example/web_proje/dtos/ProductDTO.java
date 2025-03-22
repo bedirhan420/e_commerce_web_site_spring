@@ -11,12 +11,15 @@ public class ProductDTO {
     private Integer stock;
     private Long sellerId;
     private List<Long> cartItemIds;
+    private byte[] image;
+    private String imageBase64;
+
 
     public ProductDTO() {
 
     }
 
-    public ProductDTO(Long id, String name, String description, Double price, Integer stock, Long sellerId, List<Long> cartItemIds) {
+    public ProductDTO(Long id, String name, String description, Double price, Integer stock, Long sellerId, List<Long> cartItemIds,byte[] image) {
         this.id = id;
         this.name = name;
         this.description = description;
@@ -24,6 +27,7 @@ public class ProductDTO {
         this.stock = stock;
         this.sellerId = sellerId;
         this.cartItemIds = cartItemIds;
+        this.image = image;
     }
 
     public Long getId() {
@@ -80,6 +84,22 @@ public class ProductDTO {
 
     public void setCartItemIds(List<Long> cartItemIds) {
         this.cartItemIds = cartItemIds;
+    }
+
+    public byte[] getImage() {
+        return image;
+    }
+
+    public void setImage(byte[] image) {
+        this.image = image;
+    }
+
+    public String getImageBase64() {
+        return imageBase64;
+    }
+
+    public void setImageBase64(String imageBase64) {
+        this.imageBase64 = imageBase64;
     }
 }
 

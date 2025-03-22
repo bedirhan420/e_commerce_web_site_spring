@@ -5,20 +5,23 @@
 </head>
 <body>
 <h2>Ürünü Düzenle</h2>
-<form th:action="@{/products/update}" method="post">
+<form th:action="@{/products/update}" method="post" enctype="multipart/form-data">
   <input type="hidden" name="id" th:value="${product.id}">
 
   <label>Ad:</label>
   <input type="text" name="name" th:value="${product.name}" required><br>
 
   <label>Açıklama:</label>
-  <textarea name="description" th:value="${product.description}" required></textarea><br>
+  <textarea name="description" th:text="${product.description}" required></textarea><br>
 
   <label>Fiyat:</label>
   <input type="number" name="price" step="0.01" th:value="${product.price}" required><br>
 
   <label>Stok:</label>
   <input type="number" name="stock" th:value="${product.stock}" required><br>
+
+  <label>Yeni Resim Yükle:</label>
+  <input type="file" name="image" accept="image/*"><br>
 
   <button type="submit">Güncelle</button>
 </form>
