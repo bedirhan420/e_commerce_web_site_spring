@@ -46,9 +46,6 @@ public class UserService implements IUser {
         return UserMapper.toDTO(userEntity);
     }
 
-    @Override
-    public void logoutUser() {
-    }
 
     @Override
     public List<UserDTO> findAllUsers() {

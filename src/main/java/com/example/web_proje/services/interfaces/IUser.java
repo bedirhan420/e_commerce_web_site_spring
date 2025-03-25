@@ -7,7 +7,6 @@ import java.util.Optional;
 
 public interface IUser {
     UserDTO registerUser(UserDTO userDTO);
-    void logoutUser(); // Kullanıcı çıkışı
     List<UserDTO> findAllUsers();
     Optional<UserDTO> findUserById(Long id);
     UserDTO updateUser(UserDTO userDTO);

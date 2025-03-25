@@ -1,65 +1,261 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Ürün Listesi</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <style>
+    /* Genel Stil */
+    body {
+        font-family: Arial, sans-serif;
+        background-color: #f4f7fc;
+        margin: 0;
+        padding: 0;
+    }
+
+    /* Ana Container */
+    .container {
+        max-width: 1200px;
+        margin: 30px auto;
+        padding: 20px;
+        background-color: #fff;
+        border-radius: 8px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Başlık */
+    h2 {
+        text-align: center;
+        color: #333;
+        margin-bottom: 20px;
+    }
+
+    /* Arama Formu */
+    .search-form {
+        display: flex;
+        justify-content: space-between;
+        gap: 15px;
+        margin-bottom: 30px;
+    }
+
+    .search-group {
+        display: flex;
+        flex-direction: column;
+    }
+
+    label {
+        font-size: 14px;
+        margin-bottom: 5px;
+        color: #333;
+    }
+
+    input[type="text"],
+    input[type="number"] {
+        padding: 8px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        font-size: 14px;
+        background-color: #f9f9f9;
+        width: 200px;
+    }
+
+    button.search-btn {
+        background-color: #007bff;
+        color: white;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color 0.3s;
+    }
+
+    button.search-btn:hover {
+        background-color: #0056b3;
+    }
+
+    /* Ürün Tablosu */
+    .product-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 20px;
+    }
+
+    .product-table th, .product-table td {
+        padding: 12px;
+        text-align: center;
+        border: 1px solid #ddd;
+    }
+
+    .product-table th {
+        background-color: #f4f7fc;
+        color: #333;
+    }
+
+    /* Resim */
+    .product-table img {
+        width: 80px;
+        height: 80px;
+        object-fit: cover;
+    }
+
+    /* İşlem Butonları */
+    a, button {
+        text-decoration: none;
+        color: #007bff;
+        cursor: pointer;
+    }
+
+    a:hover, button:hover {
+        text-decoration: underline;
+    }
+
+    /* Sepete Ekle Butonu */
+    .add-to-cart-btn {
+        background-color: #28a745;
+        color: white;
+        border: none;
+        padding: 8px 15px;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color 0.3s;
+    }
+
+    .add-to-cart-btn:hover {
+        background-color: #218838;
+    }
+
+    /* Sepete Git Butonu */
+    .cart-link {
+      text-align: right; /* Sağda hizalama */
+      margin-bottom: 10px;
+    }
+
+    .cart-btn {
+        background-color: #007bff;
+        color: white;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color 0.3s;
+    }
+
+    .cart-btn:hover {
+        background-color: #0056b3;
+    }
+
+    /* Yeni Ürün Ekle Linki */
+    .add-product-link {
+        margin-bottom: 20px;
+        text-align: right;
+    }
+
+    /* Hata mesajı */
+    .error-message {
+        color: red;
+        text-align: center;
+        margin-top: 15px;
+        font-size: 14px;
+    }
+
+    /* Çıkış Yapma Butonu */
+    .logout-link {
+        margin-top: 30px;
+        text-align: center;
+    }
+
+    .logout-btn {
+        background-color: #dc3545;
+        color: white;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color 0.3s;
+    }
+
+    .logout-btn:hover {
+        background-color: #c82333;
+    }
+  </style>
 </head>
 <body>
-<h2>Ürün Listesi</h2>
 
-<form action="/products/search" method="get">
-  <label for="name">Ürün Adı:</label>
-  <input type="text" id="name" name="name" placeholder="Ürün adı girin">
+<div class="container">
+  <h2>Ürün Listesi</h2>
+  <div class="cart-link">
+    <a th:if="${userRole == 'BUYER'}" href="/cart/view">
+      <button type="button" class="cart-btn"><i class="fas fa-shopping-cart"></i> Sepete Git</button>
+    </a>
+  </div>
 
-  <label for="minPrice">Min Fiyat:</label>
-  <input type="number" id="minPrice" name="minPrice" step="0.01" placeholder="Min fiyat">
+  <form action="/products/search" method="get" class="search-form">
+    <div class="search-group">
+      <label for="name">Ürün Adı:</label>
+      <input type="text" id="name" name="name" placeholder="Ürün adı girin">
+    </div>
 
-  <label for="maxPrice">Max Fiyat:</label>
-  <input type="number" id="maxPrice" name="maxPrice" step="0.01" placeholder="Max fiyat">
+    <div class="search-group">
+      <label for="minPrice">Min Fiyat:</label>
+      <input type="number" id="minPrice" name="minPrice" step="0.01" placeholder="Min fiyat">
+    </div>
 
-  <button type="submit">Ara</button>
-</form>
+    <div class="search-group">
+      <label for="maxPrice">Max Fiyat:</label>
+      <input type="number" id="maxPrice" name="maxPrice" step="0.01" placeholder="Max fiyat">
+    </div>
 
-<a th:if="${userRole == 'SELLER'}" href="/products/new">Yeni Ürün Ekle</a>
+    <button type="submit" class="search-btn"><i class="fas fa-search"></i> Ara</button>
+  </form>
 
-<table border="1">
-  <thead>
-  <tr>
-    <th>ID</th>
-    <th>Resim</th>
-    <th>Ad</th>
-    <th>Açıklama</th>
-    <th>Fiyat</th>
-    <th>Stok</th>
-    <th>Satıcı</th>
-    <th>İşlemler</th>
-  </tr>
-  </thead>
-  <tbody>
-  <tr th:each="product : ${products}">
-    <td th:text="${product.id}"></td>
-    <td>
-      <img th:if="${product.imageBase64}" th:src="'data:image/png;base64,' + ${product.imageBase64}" width="100" height="100"/>
-    </td>
-    <td th:text="${product.name}"></td>
-    <td th:text="${product.description}"></td>
-    <td th:text="${product.price} + ' TL'"></td>
-    <td th:text="${product.stock}"></td>
-    <td th:text="${product.sellerId}"></td>
-    <td>
-      <a th:if="${userRole == 'SELLER'}" th:href="@{/products/edit/{id}(id=${product.id})}">Düzenle</a>
-      <a th:if="${userRole == 'SELLER'}" th:href="@{/products/delete/{id}(id=${product.id})}" onclick="return confirm('Ürünü silmek istediğinize emin misiniz?')">Sil</a>
+  <div class="add-product-link">
+    <a th:if="${userRole == 'SELLER'}" href="/products/new">Yeni Ürün Ekle</a>
+  </div>
 
-      <form th:if="${userRole == 'BUYER'}" action="/cart/add/{id}" method="post" th:action="@{/cart/add/{id}(id=${product.id})}">
-        <button type="submit">Sepete Ekle</button>
-      </form>
-    </td>
-  </tr>
-  </tbody>
-</table>
+  <table class="product-table">
+    <thead>
+    <tr>
+      <th>ID</th>
+      <th>Resim</th>
+      <th>Ad</th>
+      <th>Açıklama</th>
+      <th>Fiyat</th>
+      <th>Stok</th>
+      <th>Satıcı</th>
+      <th>İşlemler</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="product : ${products}">
+      <td th:text="${product.id}"></td>
+      <td>
+        <img th:if="${product.imageBase64}" th:src="'data:image/png;base64,' + ${product.imageBase64}" width="100" height="100"/>
+      </td>
+      <td th:text="${product.name}"></td>
+      <td th:text="${product.description}"></td>
+      <td th:text="${product.price} + ' TL'"></td>
+      <td th:text="${product.stock}"></td>
+      <td th:text="${product.sellerId}"></td>
+      <td>
+        <a th:if="${userRole == 'SELLER'}" th:href="@{/products/edit/{id}(id=${product.id})}">Düzenle</a>
+        <a th:if="${userRole == 'SELLER'}" th:href="@{/products/delete/{id}(id=${product.id})}" onclick="return confirm('Ürünü silmek istediğinize emin misiniz?')">Sil</a>
 
-<a th:if="${userRole == 'BUYER'}" href="/cart/view" th:href="@{/cart/view}">
-  <button type="button">Sepete Git</button>
-</a>
+        <form th:if="${userRole == 'BUYER'}" action="/cart/add/{id}" method="post" th:action="@{/cart/add/{id}(id=${product.id})}">
+          <button type="submit" class="add-to-cart-btn">Sepete Ekle</button>
+        </form>
+      </td>
+    </tr>
+    </tbody>
+  </table>
+
+  <!-- Çıkış Yapma Butonu -->
+  <div class="logout-link">
+    <a href="/logout">
+      <button type="button" class="logout-btn">Çıkış Yap</button>
+    </a>
+  </div>
+</div>
 
 </body>
 </html>

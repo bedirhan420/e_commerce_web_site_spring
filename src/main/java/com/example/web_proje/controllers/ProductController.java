@@ -196,8 +196,34 @@ public class ProductController {
     public String searchProducts(@RequestParam(required = false) String name,
                                  @RequestParam(required = false) Double minPrice,
                                  @RequestParam(required = false) Double maxPrice,
+                                 @AuthenticationPrincipal UserDetails userDetails,
                                  Model model) {
         List<ProductDTO> products = productService.searchProducts(name, minPrice, maxPrice);
+
+
+        UserEntity user = userService.findByUsername(userDetails.getUsername());
+        model.addAttribute("username", user.getUsername());
+        model.addAttribute("userRole", user.getRole().name());
+
+        // SELLER rolündeyse, sadece kendi ürünlerini filtreliyoruz
+        if ("SELLER".equals(user.getRole().name())) {
+            products = productService.findAllProducts().stream()
+                    .filter(product -> product.getSellerId().equals(user.getId()))
+                    .collect(Collectors.toList());
+        } else {
+            // BUYER rolündeyse tüm ürünleri gösteriyoruz
+            products = productService.findAllProducts();
+        }
+
+
+        // Ürün resimlerini Base64 formatına çevir
+        products.forEach(product -> {
+            if (product.getImage() != null) {
+                String base64Image = Base64.getEncoder().encodeToString(product.getImage());
+                product.setImageBase64(base64Image);
+            }
+        });
+
         model.addAttribute("products", products);
         return "product/list";
     }

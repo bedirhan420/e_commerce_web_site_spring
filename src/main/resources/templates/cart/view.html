@@ -2,6 +2,72 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <title>Sepetim</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f8f9fa;
+            text-align: center;
+            margin: 0;
+            padding: 20px;
+        }
+        h2 {
+            color: #333;
+        }
+        table {
+            width: 80%;
+            margin: 20px auto;
+            border-collapse: collapse;
+            background: white;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        th, td {
+            padding: 15px;
+            border-bottom: 1px solid #ddd;
+        }
+        th {
+            background: #007bff;
+            color: white;
+        }
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+        input[type="number"] {
+            width: 50px;
+            padding: 5px;
+            text-align: center;
+        }
+        button {
+            background-color: #28a745;
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+        button:hover {
+            background-color: #218838;
+        }
+        .delete-button {
+            background-color: #dc3545;
+        }
+        .delete-button:hover {
+            background-color: #c82333;
+        }
+        a {
+            display: inline-block;
+            margin-top: 20px;
+            padding: 10px 20px;
+            background: #007bff;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+        }
+        a:hover {
+            background: #0056b3;
+        }
+    </style>
 </head>
 <body>
 <h2>Sepetim</h2>
@@ -18,7 +84,7 @@
     <tbody>
     <tr th:each="cartItem : ${cartItems}">
         <td th:text="${productNames[cartItem.productId]}"></td>
-        <td th:text="${cartItem.price}"></td>
+        <td th:text="${cartItem.price} + ' TL'"></td>
         <td>
             <form action="/cart/update" method="post">
                 <input type="hidden" name="cartItemId" th:value="${cartItem.id}" />
@@ -26,11 +92,11 @@
                 <button type="submit">Güncelle</button>
             </form>
         </td>
-        <td th:text="${cartItem.price * cartItem.quantity}"></td>
+        <td th:text="${cartItem.price * cartItem.quantity} + ' TL'"></td>
         <td>
             <form action="/cart/delete" method="post">
                 <input type="hidden" name="cartItemId" th:value="${cartItem.id}" />
-                <button type="submit">Sil</button>
+                <button type="submit" class="delete-button">Sil</button>
             </form>
         </td>
     </tr>

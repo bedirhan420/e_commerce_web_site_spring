@@ -4,43 +4,130 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Register</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f7fc;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .register-container {
+            background-color: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+        }
+
+        h2 {
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        .register-container div {
+            margin-bottom: 15px;
+        }
+
+        label {
+            font-size: 14px;
+            color: #333;
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        input[type="text"],
+        input[type="email"],
+        input[type="password"],
+        select {
+            width: 100%;
+            padding: 10px;
+            font-size: 14px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-sizing: border-box;
+        }
+
+        button {
+            background-color: #28a745;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            font-size: 16px;
+            border-radius: 5px;
+            width: 100%;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #218838;
+        }
+
+        .error-message {
+            color: red;
+            font-size: 14px;
+            margin-bottom: 15px;
+        }
+
+        p {
+            font-size: 14px;
+            margin-top: 20px;
+        }
+
+        a {
+            color: #007bff;
+            text-decoration: none;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+    </style>
 </head>
 <body>
 
-<h2>Register</h2>
+<div class="register-container">
+    <h2>Register</h2>
 
-<form method="post" action="/register">
-    <div>
-        <label>Username:</label>
-        <input type="text" name="username" required>
-    </div>
+    <form method="post" action="/register">
+        <div>
+            <label>Username:</label>
+            <input type="text" name="username" required>
+        </div>
 
-    <div>
-        <label>Email:</label>
-        <input type="email" name="email" required>
-    </div>
+        <div>
+            <label>Email:</label>
+            <input type="email" name="email" required>
+        </div>
 
-    <div>
-        <label>Password:</label>
-        <input type="password" name="password" required>
-    </div>
+        <div>
+            <label>Password:</label>
+            <input type="password" name="password" required>
+        </div>
 
-    <div>
-        <label>Role:</label>
-        <select name="role">
-            <option th:each="role : ${T(com.example.web_proje.entities.Role).values()}"
-                    th:value="${role}" th:text="${role}">Role</option>
-        </select>
-    </div>
+        <div>
+            <label>Role:</label>
+            <select name="role">
+                <option th:each="role : ${T(com.example.web_proje.entities.Role).values()}"
+                        th:value="${role}" th:text="${role}">Role</option>
+            </select>
+        </div>
 
-    <div>
-        <button type="submit">Register</button>
-    </div>
-</form>
+        <div>
+            <button type="submit">Register</button>
+        </div>
+    </form>
 
-<p th:if="${error}" style="color: red;" th:text="${error}"></p>
+    <p th:if="${error}" class="error-message" th:text="${error}"></p>
 
-<p>Already have an account? <a href="/login">Login here</a></p>
+    <p>Already have an account? <a href="/login">Login here</a></p>
+</div>
 
 </body>
 </html>
