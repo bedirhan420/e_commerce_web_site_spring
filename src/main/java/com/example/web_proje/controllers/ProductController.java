@@ -1,10 +1,11 @@
 package com.example.web_proje.controllers;
 
 import com.example.web_proje.dtos.ProductDTO;
+import com.example.web_proje.entities.Role;
 import com.example.web_proje.entities.UserEntity;
-import com.example.web_proje.services.implementation.CartItemService;
 import com.example.web_proje.services.implementation.ProductService;
 import com.example.web_proje.services.implementation.UserService;
+import lombok.AllArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
@@ -17,17 +18,13 @@ import java.util.Base64;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@AllArgsConstructor
 @Controller
 @RequestMapping("/products")
 public class ProductController {
 
     private  ProductService productService;
     private  UserService userService;
-
-    public ProductController(ProductService productService, UserService userService) {
-        this.productService = productService;
-        this.userService = userService;
-    }
 
     @GetMapping("/list")
     public String listProducts(Model model, @AuthenticationPrincipal UserDetails userDetails) {
@@ -39,7 +36,7 @@ public class ProductController {
             model.addAttribute("userRole", user.getRole().name());
 
             // SELLER rolündeyse, sadece kendi ürünlerini filtreliyoruz
-            if ("SELLER".equals(user.getRole().name())) {
+            if (Role.SELLER.name().equals(user.getRole().name())) {
                 products = productService.findAllProducts().stream()
                         .filter(product -> product.getSellerId().equals(user.getId()))
                         .collect(Collectors.toList());
@@ -51,11 +48,9 @@ public class ProductController {
             model.addAttribute("username", "Guest");
             model.addAttribute("userRole", "GUEST");
 
-            // Eğer kullanıcı giriş yapmamışsa, tüm ürünleri göster
             products = productService.findAllProducts();
         }
 
-        // Ürün resimlerini Base64 formatına çevir
         products.forEach(product -> {
             if (product.getImage() != null) {
                 String base64Image = Base64.getEncoder().encodeToString(product.getImage());
@@ -68,7 +63,7 @@ public class ProductController {
 
     @GetMapping("/new")
     public String newProductForm(Model model, @AuthenticationPrincipal UserDetails userDetails) {
-        if (userDetails == null || !userService.findByUsername(userDetails.getUsername()).getRole().name().equals("SELLER")) {
+        if (userDetails == null || !userService.findByUsername(userDetails.getUsername()).getRole().name().equals(Role.SELLER.name())) {
             return "redirect:/products?error=Unauthorized";
         }
 
@@ -87,7 +82,7 @@ public class ProductController {
         }
 
         UserEntity user = userService.findByUsername(userDetails.getUsername());
-        if (!"SELLER".equals(user.getRole().name())) {
+        if (!Role.SELLER.name().equals(user.getRole().name())) {
             return "redirect:/products?error=Unauthorized";
         }
 
@@ -118,7 +113,7 @@ public class ProductController {
                 .orElseThrow(() -> new RuntimeException("Ürün bulunamadı"));
         UserEntity user = userService.findByUsername(userDetails.getUsername());
 
-        if (!"SELLER".equals(user.getRole().name()) || !product.getSellerId().equals(user.getId())) {
+        if (!Role.SELLER.name().equals(user.getRole().name()) || !product.getSellerId().equals(user.getId())) {
             return "redirect:/products/list?error=Unauthorized";
         }
 
@@ -140,24 +135,21 @@ public class ProductController {
 
         UserEntity user = userService.findByUsername(userDetails.getUsername());
 
-        if (!"SELLER".equals(user.getRole().name())) {
+        if (!Role.SELLER.name().equals(user.getRole().name())) {
             return "redirect:/products/list?error=Unauthorized";
         }
 
         ProductDTO existingProduct = productService.findProductById(id)
                 .orElseThrow(() -> new RuntimeException("Ürün bulunamadı"));
 
-        // Kullanıcının ürün sahibi olup olmadığını kontrol et
         if (!existingProduct.getSellerId().equals(user.getId())) {
             return "redirect:/products/list?error=Unauthorized";
         }
 
         try {
             if (image != null && !image.isEmpty()) {
-                // Yeni resmi byte[]'a dönüştür
                 existingProduct.setImage(image.getBytes());
             } else {
-                // Mevcut resmi kullan
                 existingProduct.setImage(existingProduct.getImage());
             }
 
@@ -185,7 +177,7 @@ public class ProductController {
         ProductDTO product = productService.findProductById(id)
                 .orElseThrow(() -> new RuntimeException("Ürün bulunamadı"));
         UserEntity user = userService.findByUsername(userDetails.getUsername());
-        if (!"SELLER".equals(user.getRole().name()) || !product.getSellerId().equals(user.getId())) {
+        if (!Role.SELLER.name().equals(user.getRole().name()) || !product.getSellerId().equals(user.getId())) {
             return "redirect:/products/list?error=Unauthorized";
         }
         productService.deleteProduct(id);
@@ -198,23 +190,38 @@ public class ProductController {
                                  @RequestParam(required = false) Double maxPrice,
                                  @AuthenticationPrincipal UserDetails userDetails,
                                  Model model) {
-        List<ProductDTO> products = productService.searchProducts(name, minPrice, maxPrice);
-
 
         UserEntity user = userService.findByUsername(userDetails.getUsername());
         model.addAttribute("username", user.getUsername());
         model.addAttribute("userRole", user.getRole().name());
 
-        // SELLER rolündeyse, sadece kendi ürünlerini filtreliyoruz
-        if ("SELLER".equals(user.getRole().name())) {
-            products = productService.findAllProducts().stream()
-                    .filter(product -> product.getSellerId().equals(user.getId()))
-                    .collect(Collectors.toList());
-        } else {
-            // BUYER rolündeyse tüm ürünleri gösteriyoruz
-            products = productService.findAllProducts();
-        }
-
+        List<ProductDTO> products = productService.findAllProducts().stream()
+                .filter(product -> {
+                    if (Role.SELLER.name().equals(user.getRole().name())) {
+                        return product.getSellerId().equals(user.getId());
+                    } else {
+                        return true;
+                    }
+                })
+                .filter(product -> {
+                    if (name != null && !name.isEmpty()) {
+                        return product.getName().toLowerCase().contains(name.toLowerCase());
+                    }
+                    return true;
+                })
+                .filter(product -> {
+                    if (minPrice != null) {
+                        return product.getPrice() >= minPrice;
+                    }
+                    return true;
+                })
+                .filter(product -> {
+                    if (maxPrice != null) {
+                        return product.getPrice() <= maxPrice;
+                    }
+                    return true;
+                })
+                .collect(Collectors.toList());
 
         // Ürün resimlerini Base64 formatına çevir
         products.forEach(product -> {
@@ -227,6 +234,5 @@ public class ProductController {
         model.addAttribute("products", products);
         return "product/list";
     }
-
 
 }

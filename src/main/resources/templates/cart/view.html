@@ -55,7 +55,7 @@
         .delete-button:hover {
             background-color: #c82333;
         }
-        a {
+        a, .checkout-button {
             display: inline-block;
             margin-top: 20px;
             padding: 10px 20px;
@@ -64,19 +64,28 @@
             text-decoration: none;
             border-radius: 5px;
         }
-        a:hover {
-            background: #0056b3;
+        .checkout-button {
+            background-color: #ffc107;
+            color: black;
+        }
+        .checkout-button:hover {
+            background-color: #e0a800;
         }
     </style>
 </head>
 <body>
 <h2>Sepetim</h2>
+
+<div th:if="${errorMessage}" style="color:red;">[[${errorMessage}]]</div>
+<div th:if="${successMessage}" style="color:green;">[[${successMessage}]]</div>
+
 <table>
     <thead>
     <tr>
         <th>Ürün</th>
         <th>Fiyat</th>
         <th>Miktar</th>
+        <th>Stok</th>
         <th>Toplam</th>
         <th>İşlemler</th>
     </tr>
@@ -92,6 +101,7 @@
                 <button type="submit">Güncelle</button>
             </form>
         </td>
+        <td th:text="${productStocks[cartItem.productId]}"></td>
         <td th:text="${cartItem.price * cartItem.quantity} + ' TL'"></td>
         <td>
             <form action="/cart/delete" method="post">
@@ -102,6 +112,17 @@
     </tr>
     </tbody>
 </table>
+
+<h3 th:text="'Toplam Tutar: ' + ${totalPrice} + ' TL'"></h3>
+
 <a href="/products/list">Alışverişe Devam Et</a>
+
+<form action="/cart/checkout" method="post">
+    <button type="submit" class="checkout-button">Alışverişi Tamamla</button>
+</form>
+
+<script th:if="${successMessage}">
+    alert([[${successMessage}]]);
+</script>
 </body>
 </html>

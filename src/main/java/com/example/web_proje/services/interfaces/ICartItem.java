@@ -11,4 +11,5 @@ public interface ICartItem {
     Optional<CartItemDTO> findCartItemById(Long id);
     CartItemDTO updateCartItem(CartItemDTO cartItemDTO);
     void deleteCartItem(Long id);
+    void clearCart(Long userId);
 }

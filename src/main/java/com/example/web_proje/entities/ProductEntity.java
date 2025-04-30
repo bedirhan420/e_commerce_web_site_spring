@@ -1,9 +1,17 @@
 package com.example.web_proje.entities;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.util.List;
 
+@AllArgsConstructor
+@NoArgsConstructor
+@Getter
+@Setter
 @Entity
 @Table(name = "products")
 
@@ -27,85 +35,5 @@ public class ProductEntity {
     @Lob
     @Column(columnDefinition = "LONGBLOB")
     private byte[] image;
-
-
-    public ProductEntity() {
-    }
-
-    public ProductEntity(Long id, String name, String description, Double price, Integer stock, UserEntity seller, List<CartItemEntity> cartItems,byte[] image) {
-        this.id = id;
-        this.name = name;
-        this.description = description;
-        this.price = price;
-        this.stock = stock;
-        this.seller = seller;
-        this.cartItems = cartItems;
-        this.image = image;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public Double getPrice() {
-        return price;
-    }
-
-    public void setPrice(Double price) {
-        this.price = price;
-    }
-
-    public Integer getStock() {
-        return stock;
-    }
-
-    public void setStock(Integer stock) {
-        this.stock = stock;
-    }
-
-    public UserEntity getSeller() {
-        return seller;
-    }
-
-    public void setSeller(UserEntity seller) {
-        this.seller = seller;
-    }
-
-    public List<CartItemEntity> getCartItems() {
-        return cartItems;
-    }
-
-    public void setCartItems(List<CartItemEntity> cartItems) {
-        this.cartItems = cartItems;
-    }
-
-    public byte[] getImage() {
-        return image;
-    }
-
-    public void setImage(byte[] image) {
-        this.image = image;
-    }
-
 }
 

@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Profilim</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f7fc;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 50px auto;
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        h2 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        .profile-info {
+            margin-bottom: 20px;
+        }
+
+        .profile-info label {
+            display: block;
+            margin-bottom: 5px;
+            color: #555;
+        }
+
+        .profile-info span {
+            display: block;
+            padding: 10px;
+            background-color: #f9f9f9;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            color: #333;
+        }
+        a{
+            display: inline-block;
+            margin-top: 20px;
+            padding: 10px 20px;
+            background: #007bff;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h2>Profil Bilgilerim</h2>
+
+    <div class="profile-info">
+        <label>Ad:</label>
+        <span th:text="${user.username}">Kullanıcı Adı</span>
+    </div>
+
+    <div class="profile-info">
+        <label>Email:</label>
+        <span th:text="${user.email}">Email Adresi</span>
+    </div>
+
+    <a href="/products/list">Alışverişe Devam Et</a>
+
+</div>
+</body>
+</html>

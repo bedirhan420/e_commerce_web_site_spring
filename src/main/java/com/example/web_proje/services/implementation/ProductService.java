@@ -9,24 +9,20 @@ import com.example.web_proje.repostorities.CartItemRepo;
 import com.example.web_proje.repostorities.ProductRepo;
 import com.example.web_proje.repostorities.UserRepo;
 import com.example.web_proje.services.interfaces.IProduct;
+import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+@AllArgsConstructor
 @Service
 public class ProductService implements IProduct {
 
     private ProductRepo productRepo;
     private UserRepo userRepo;
     private CartItemRepo cartItemRepo;
-
-    public ProductService(ProductRepo productRepo, UserRepo userRepo, CartItemRepo cartItemRepo) {
-        this.productRepo = productRepo;
-        this.userRepo = userRepo;
-        this.cartItemRepo = cartItemRepo;
-    }
 
     @Override
     public ProductDTO newProduct(ProductDTO productDTO) {
@@ -98,7 +94,6 @@ public class ProductService implements IProduct {
         return ProductMapper.toDTO(updatedProduct);
     }
 
-
     @Override
     public void deleteProduct(Long id) {
         if (!productRepo.existsById(id)) {
@@ -123,5 +118,4 @@ public class ProductService implements IProduct {
 
         return products.stream().map(ProductMapper::toDTO).collect(Collectors.toList());
     }
-
 }
