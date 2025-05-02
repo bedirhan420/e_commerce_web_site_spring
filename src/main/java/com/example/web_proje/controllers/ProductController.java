@@ -188,42 +188,27 @@ public class ProductController {
     public String searchProducts(@RequestParam(required = false) String name,
                                  @RequestParam(required = false) Double minPrice,
                                  @RequestParam(required = false) Double maxPrice,
-                                 @AuthenticationPrincipal UserDetails userDetails,
-                                 Model model) {
+                                 Model model,
+                                 @AuthenticationPrincipal UserDetails userDetails) {
 
-        UserEntity user = userService.findByUsername(userDetails.getUsername());
-        model.addAttribute("username", user.getUsername());
-        model.addAttribute("userRole", user.getRole().name());
+        List<ProductDTO> products = productService.searchProducts(name, minPrice, maxPrice);
 
-        List<ProductDTO> products = productService.findAllProducts().stream()
-                .filter(product -> {
-                    if (Role.SELLER.name().equals(user.getRole().name())) {
-                        return product.getSellerId().equals(user.getId());
-                    } else {
-                        return true;
-                    }
-                })
-                .filter(product -> {
-                    if (name != null && !name.isEmpty()) {
-                        return product.getName().toLowerCase().contains(name.toLowerCase());
-                    }
-                    return true;
-                })
-                .filter(product -> {
-                    if (minPrice != null) {
-                        return product.getPrice() >= minPrice;
-                    }
-                    return true;
-                })
-                .filter(product -> {
-                    if (maxPrice != null) {
-                        return product.getPrice() <= maxPrice;
-                    }
-                    return true;
-                })
-                .collect(Collectors.toList());
+        if (userDetails != null) {
+            UserEntity user = userService.findByUsername(userDetails.getUsername());
+            model.addAttribute("username", user.getUsername());
+            model.addAttribute("userRole", user.getRole().name());
 
-        // Ürün resimlerini Base64 formatına çevir
+            if (Role.SELLER.name().equals(user.getRole().name())) {
+                products = products.stream()
+                        .filter(product -> product.getSellerId().equals(user.getId()))
+                        .collect(Collectors.toList());
+            }
+        } else {
+            model.addAttribute("username", "Guest");
+            model.addAttribute("userRole", "GUEST");
+        }
+
+        // Görseli base64'e çevir
         products.forEach(product -> {
             if (product.getImage() != null) {
                 String base64Image = Base64.getEncoder().encodeToString(product.getImage());
@@ -234,5 +219,6 @@ public class ProductController {
         model.addAttribute("products", products);
         return "product/list";
     }
+
 
 }

@@ -108,14 +108,23 @@ public class ProductService implements IProduct {
 
         if (name != null && minPrice != null && maxPrice != null) {
             products = productRepo.findByNameContainingIgnoreCaseAndPriceBetween(name, minPrice, maxPrice);
+        } else if (name != null && minPrice != null) {
+            products = productRepo.findByNameContainingIgnoreCaseAndPriceGreaterThanEqual(name, minPrice);
+        } else if (name != null && maxPrice != null) {
+            products = productRepo.findByNameContainingIgnoreCaseAndPriceLessThanEqual(name, maxPrice);
         } else if (name != null) {
             products = productRepo.findByNameContainingIgnoreCase(name);
         } else if (minPrice != null && maxPrice != null) {
             products = productRepo.findByPriceBetween(minPrice, maxPrice);
+        } else if (minPrice != null) {
+            products = productRepo.findByPriceGreaterThanEqual(minPrice);
+        } else if (maxPrice != null) {
+            products = productRepo.findByPriceLessThanEqual(maxPrice);
         } else {
             products = productRepo.findAll();
         }
 
         return products.stream().map(ProductMapper::toDTO).collect(Collectors.toList());
     }
+
 }
