@@ -1,6 +1,6 @@
 package com.example.web_proje.dtos;
 
-import  com.example.web_proje.entities.Role;
+import com.example.web_proje.enums.Role;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

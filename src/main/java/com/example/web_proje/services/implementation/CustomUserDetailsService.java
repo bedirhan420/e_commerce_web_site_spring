@@ -2,6 +2,7 @@ package com.example.web_proje.services.implementation;
 
 import com.example.web_proje.entities.UserEntity;
 import com.example.web_proje.repostorities.UserRepo;
+import lombok.AllArgsConstructor;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -10,14 +11,20 @@ import org.springframework.stereotype.Service;
 
 import java.util.Collections;
 
+@AllArgsConstructor
 @Service
-public class CustomUserDetailsService implements UserDetailsService {
+public class CustomUserDetailsService implements UserDetailsService { //Kullanıcı Doğrulama Servisi
+    /*
+    Bu sınıf, Spring Security'nin UserDetailsService arayüzünü uygular.
+    Kullanıcı adıyla veritabanından kullanıcıyı çekerek doğrulama sağlar.
+    */
 
+    /*
+    Bu yapı çalışabilmesi için:
+        UserEntity: Kullanıcı bilgilerini tutan bir JPA Entity sınıfı olmalı.
+        UserRepo: findByUsername() metodunu içeren bir Spring Data JPA repository sınıfı olmalı.
+    */
     private final UserRepo userRepo;
-
-    public CustomUserDetailsService(UserRepo userRepo) {
-        this.userRepo = userRepo;
-    }
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {

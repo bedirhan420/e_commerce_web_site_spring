@@ -108,13 +108,15 @@
 
         <div>
             <label>Password:</label>
-            <input type="password" name="password" required>
+            <input type="password" name="password" required minlength="8" maxlength="8">
+            <small style="color: #888;">Password must be 8 characters long.</small>
         </div>
+
 
         <div>
             <label>Role:</label>
             <select name="role">
-                <option th:each="role : ${T(com.example.web_proje.entities.Role).values()}"
+                <option th:each="role : ${T(com.example.web_proje.enums.Role).values()}"
                         th:value="${role}" th:text="${role}">Role</option>
             </select>
         </div>

@@ -1,4 +1,5 @@
 package com.example.web_proje.entities;
+import com.example.web_proje.enums.Role;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;

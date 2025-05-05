@@ -25,6 +25,7 @@ public class ProductService implements IProduct {
     private CartItemRepo cartItemRepo;
 
     @Override
+    //TODO: resim boyutu kontrolü ekle
     public ProductDTO newProduct(ProductDTO productDTO) {
         ProductEntity product = ProductMapper.toEntity(productDTO);
 

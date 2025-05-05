@@ -1,7 +1,7 @@
 package com.example.web_proje.controllers;
 
 import com.example.web_proje.dtos.ProductDTO;
-import com.example.web_proje.entities.Role;
+import com.example.web_proje.enums.Role;
 import com.example.web_proje.entities.UserEntity;
 import com.example.web_proje.services.implementation.ProductService;
 import com.example.web_proje.services.implementation.UserService;

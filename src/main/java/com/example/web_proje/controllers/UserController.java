@@ -36,6 +36,8 @@ public class UserController {
 
     @GetMapping("/login")
     public String showLoginPage(@AuthenticationPrincipal UserDTO user) {
+        /* @AuthenticationPrincipal => Spring Security tarafından sağlanan bir anotasyondur ve oturumda (session'da) giriş yapmış kullanıcıya ait bilgileri
+         doğrudan bir controller metoduna parametre olarak enjekte etmeyi sağlar.*/
         if (user != null) {
             return "redirect:/products/list";
         }
